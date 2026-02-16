@@ -5,7 +5,8 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+// $routes->get('/', 'Home::index');
+$routes->get('/', 'Turnos::index');
 $routes->get('turnos', 'Turnos::index');
 $routes->post('turnos/agendar', 'Turnos::agendar');
 $routes->get('turnos/eventos', 'Turnos::listarEventos');

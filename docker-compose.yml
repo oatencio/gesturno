@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: gesturno_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - gesturno_net
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: gesturno_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gesturno
+      MYSQL_USER: gesturno
+      MYSQL_PASSWORD: gesturno123
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - gesturno_net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: gesturno_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db
+    networks:
+      - gesturno_net
+
+volumes:
+  db_data:
+
+networks:
+  gesturno_net:
