@@ -13,14 +13,15 @@ class ClinicaModel extends Model
     protected $useSoftDeletes   = false; // Cambiar a true si agregas columna deleted_at
 
     // Campos que permitimos que se carguen desde el formulario del Superadmin
-    protected $allowedFields    = [
-        'nombre', 
-        'slug', 
-        'email_contacto', 
-        'plan', 
-        'estado', 
-        'fecha_vencimiento'
-    ];
+    protected $allowedFields = [
+    'nombre', 
+    'direccion', 
+    'telefono', 
+    'email', 
+    'plan', 
+    'estado', 
+    'deleted_at'
+];
 
     // Fechas automáticas
     protected $useTimestamps = true;

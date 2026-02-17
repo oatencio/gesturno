@@ -279,6 +279,9 @@
                 <a href="<?= base_url('superadmin') ?>" class="nav-link <?= (uri_string() == 'superadmin') ? 'active' : '' ?>">
                     <i class="bi bi-building-gear"></i> Gestión de Clínicas
                 </a>
+                <a href="<?= base_url('superadmin/usuarios') ?>" class="nav-link <?= (strpos(uri_string(), 'usuarios') !== false) ? 'active' : '' ?>">
+                    <i class="bi bi-shield-lock"></i> Usuarios Globales
+                </a>
                 <a href="<?= base_url('superadmin/reportes') ?>" class="nav-link <?= (uri_string() == 'superadmin/reportes') ? 'active' : '' ?>">
                     <i class="bi bi-graph-up-arrow"></i> Estadísticas Globales
                 </a>

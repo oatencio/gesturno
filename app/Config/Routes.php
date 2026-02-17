@@ -39,4 +39,12 @@ $routes->get('superadmin', 'Superadmin::index');
 $routes->group('superadmin', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'Superadmin::index');
     $routes->post('guardarClinica', 'Superadmin::guardarClinica');
+
+    $routes->get('usuarios', 'Superadmin::usuarios'); // Ver listado global
+    $routes->get('resetPassword/(:num)', 'Superadmin::resetPassword/$1'); // Resetear clave por ID
+});
+
+$routes->group('usuarios', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'Usuarios::index');
+    $routes->post('guardar', 'Usuarios::guardar'); // El Admin local crea sus empleados
 });

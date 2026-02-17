@@ -12,6 +12,14 @@
                         <input type="text" name="nombre" class="form-control" placeholder="Ej: Centro Médico Integral" required>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" name="direccion" class="form-control" placeholder="Ej: Calle Principal 123" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control" placeholder="Ej: 555-1234" required>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Email del Administrador</label>
                         <input type="email" name="email" class="form-control" placeholder="admin@clinica.com" required>
                         <div class="form-text">Se creará un usuario admin automáticamente con este correo.</div>
