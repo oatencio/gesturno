@@ -17,7 +17,7 @@ class Superadmin extends BaseController
         $model = new ClinicaModel();
         $data['clinicas'] = $model->findAll();
 
-        return view('superadmin/clinicas', $data);
+        return view('superadmin/clinicas_index', $data);
     }
 
     public function guardarClinica()

@@ -4,7 +4,7 @@
 
 <?= $this->section('content') ?>
 
-<header class="top-bar">
+<header class="top-bar-turnos">
     <div>
         <h4 class="fw-bold mb-0 text-dark">Hola, <?= session()->get('nombre') ?></h4>
         <p class="text-muted small mb-0">Gestión de Clínica en tiempo real</p>
