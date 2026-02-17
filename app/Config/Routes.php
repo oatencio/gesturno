@@ -34,3 +34,9 @@ $routes->post('pacientes/editar/(:num)', 'Pacientes::editar/$1');
 $routes->get('pacientes/eliminar/(:num)', 'Pacientes::eliminar/$1');
 $routes->get('pacientes/restaurar/(:num)', 'Pacientes::restaurar/$1');
 $routes->post('pacientes/guardar_ajax', 'Pacientes::guardar_ajax');
+
+$routes->get('superadmin', 'Superadmin::index');
+$routes->group('superadmin', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'Superadmin::index');
+    $routes->post('guardarClinica', 'Superadmin::guardarClinica');
+});
