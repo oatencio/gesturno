@@ -299,6 +299,17 @@
                 <a href="<?= base_url('pacientes') ?>" class="nav-link <?= (strpos(uri_string(), 'pacientes') !== false) ? 'active' : '' ?>">
                     <i class="bi bi-person-badge"></i> Gestión de Pacientes
                 </a>
+                <?php if (session()->get('rol') == 'admin_clinica'): ?>
+                    <div class="menu-label text-muted small fw-bold mt-4 mb-2 ps-3 text-uppercase" style="font-size: 0.7rem;">Configuración Clínica</div>
+
+                    <a href="<?= base_url('usuarios') ?>" class="nav-link <?= (url_is('usuarios*')) ? 'active' : '' ?>">
+                        <i class="bi bi-person-badge me-2"></i> Mi Equipo
+                    </a>
+
+                    <a href="" class="nav-link">
+                        <i class="bi bi-gear me-2"></i> Datos de Clínica
+                    </a>
+                <?php endif; ?>
             <?php endif; ?>
 
             <div style="position: absolute; bottom: 20px; width: 100%;">
