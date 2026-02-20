@@ -28,7 +28,7 @@ class Usuarios extends BaseController
             'nombre'     => $this->request->getPost('nombre'),
             'email'   => $this->request->getPost('email'),
             'password'   => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role'       => $this->request->getPost('role')
+            'rol'       => $this->request->getPost('rol')
         ];
 
         // Validación simple de duplicados

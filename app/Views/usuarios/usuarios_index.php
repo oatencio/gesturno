@@ -93,46 +93,47 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalUsuario" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">Nuevo integrante del equipo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="<?= base_url('usuarios/guardar') ?>" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Nombre Completo</label>
-                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Dra. Elena Smith" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold">Nombre de Usuario</label>
-                            <input type="text" name="username" class="form-control" placeholder="elena.smith" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold">Rol</label>
-                            <select name="role" class="form-select" required>
-                                <option value="secretario">Secretario/a</option>
-                                <option value="medico">Médico/a</option>
-                                <option value="asistente">Asistente</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Contraseña</label>
-                        <input type="password" name="password" class="form-control" required>
-                        <div class="form-text">Mínimo 8 caracteres.</div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4">Guardar Usuario</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<?= view('modales/modal_usuario') ?>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+
+<script>
+    $(document).ready(function() {
+        // Buscador en tiempo real
+        $("#busquedaPaciente").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $(".paciente-row").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        // Lógica Editar
+        $('.btn-edit-paciente').on('click', function() {
+            const id = $(this).data('id');
+            const modal = $('#modalPaciente');
+            modal.find('h5').text('Editar Ficha de Paciente');
+            modal.find('form').attr('action', '<?= base_url('pacientes/editar/') ?>' + id);
+            modal.find('input[name="dni"]').val($(this).data('dni'));
+            modal.find('input[name="nombre"]').val($(this).data('nombre'));
+            modal.find('input[name="apellido"]').val($(this).data('apellido'));
+            modal.find('input[name="obra_social"]').val($(this).data('os'));
+            modal.find('input[name="telefono"]').val($(this).data('tel'));
+            modal.find('input[name="email"]').val($(this).data('email'));
+            modal.modal('show');
+        });
+
+        // Reset modal
+        $('#modalPaciente').on('hidden.bs.modal', function() {
+            $(this).find('h5').text('Ficha de Paciente');
+            $(this).find('form').attr('action', '<?= base_url('pacientes/guardar') ?>');
+            $(this).find('form')[0].reset();
+        });
+
+        <?php if (session()->getFlashdata('success')): ?>
+            toastr.success("<?= session()->getFlashdata('success') ?>");
+        <?php endif; ?>
+    });
+</script>
 <?= $this->endSection() ?>
