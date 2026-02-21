@@ -22,7 +22,7 @@ class Usuarios extends BaseController
     public function guardar()
     {
         $model = new UsuarioModel();
-        
+
         $data = [
             'clinica_id' => session()->get('clinica_id'), // Asignación automática
             'nombre'     => $this->request->getPost('nombre'),
@@ -40,18 +40,56 @@ class Usuarios extends BaseController
         return redirect()->to(base_url('usuarios'))->with('success', 'Usuario creado correctamente.');
     }
 
+    public function editar($id)
+    {
+        $model = new UsuarioModel();
+        $clinicaId = session()->get('clinica_id');
+
+        // Verificamos que el usuario pertenezca a la clínica antes de hacer nada
+        $usuario = $model->where('id', $id)->where('clinica_id', $clinicaId)->first();
+
+        if (!$usuario) {
+            return redirect()->to(base_url('usuarios'))->with('error', 'Usuario no encontrado o sin permisos.');
+        }
+
+        $data = [
+            'nombre' => $this->request->getPost('nombre'),
+            'email'  => $this->request->getPost('email'),
+            'rol'    => $this->request->getPost('rol')
+        ];
+
+        // Lógica para la contraseña: solo se actualiza si se escribe algo nuevo
+        $nuevaPassword = $this->request->getPost('password');
+        if (!empty($nuevaPassword)) {
+            $data['password'] = password_hash($nuevaPassword, PASSWORD_DEFAULT);
+        }
+
+        // Actualizamos usando el ID y asegurando la clinica_id por seguridad extra
+        $model->where('id', $id)->where('clinica_id', $clinicaId)->set($data)->update();
+
+        return redirect()->to(base_url('usuarios'))->with('success', 'Usuario actualizado correctamente.');
+    }
+
     public function eliminar($id)
     {
         $model = new UsuarioModel();
         $clinicaId = session()->get('clinica_id');
 
-        // Seguridad: solo puede eliminar si el usuario pertenece a su clínica
-        // y no es él mismo
+        // 1. Seguridad: No eliminarse a sí mismo
         if ($id == session()->get('id')) {
             return redirect()->back()->with('error', 'No puedes eliminarte a ti mismo.');
         }
 
-        $model->where('id', $id)->where('clinica_id', $clinicaId)->delete();
-        return redirect()->to(base_url('usuarios'))->with('success', 'Usuario eliminado.');
+        // 2. Seguridad: Verificar pertenencia a la clínica
+        $usuario = $model->where('id', $id)->where('clinica_id', $clinicaId)->first();
+
+        if (!$usuario) {
+            return redirect()->back()->with('error', 'Usuario no encontrado.');
+        }
+
+        // 3. Borrado Lógico
+        $model->delete($id);
+
+        return redirect()->to(base_url('usuarios'))->with('success', 'Usuario desactivado correctamente.');
     }
 }

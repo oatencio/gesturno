@@ -75,13 +75,17 @@
                             </td>
                             <td class="text-end pe-4">
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-outline-secondary rounded-pill me-1">
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill me-1 btn-edit-usuario"
+                                        data-id="<?= $u->id ?>"
+                                        data-nombre="<?= $u->nombre ?>"
+                                        data-email="<?= $u->email ?>"
+                                        data-rol="<?= $u->rol ?>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <?php if ($u->id !== session()->get('id')): ?>
-                                        <button class="btn btn-sm btn-outline-danger rounded-pill">
+                                        <a href="<?= base_url('usuarios/eliminar/' . $u->id) ?>" class="btn btn-light btn-sm rounded-circle text-danger ms-1" onclick="return confirm('¿Dar de baja al usuario?')">
                                             <i class="bi bi-trash"></i>
-                                        </button>
+                                        </a>
                                     <?php endif; ?>
                                 </div>
                             </td>
@@ -101,39 +105,32 @@
 
 <script>
     $(document).ready(function() {
-        // Buscador en tiempo real
-        $("#busquedaPaciente").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $(".paciente-row").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
-        });
 
         // Lógica Editar
-        $('.btn-edit-paciente').on('click', function() {
+        $('.btn-edit-usuario').on('click', function() {
             const id = $(this).data('id');
-            const modal = $('#modalPaciente');
-            modal.find('h5').text('Editar Ficha de Paciente');
-            modal.find('form').attr('action', '<?= base_url('pacientes/editar/') ?>' + id);
-            modal.find('input[name="dni"]').val($(this).data('dni'));
-            modal.find('input[name="nombre"]').val($(this).data('nombre'));
-            modal.find('input[name="apellido"]').val($(this).data('apellido'));
-            modal.find('input[name="obra_social"]').val($(this).data('os'));
-            modal.find('input[name="telefono"]').val($(this).data('tel'));
-            modal.find('input[name="email"]').val($(this).data('email'));
-            modal.modal('show');
+            const nombre = $(this).data('nombre');
+            const email = $(this).data('email');
+            const rol = $(this).data('rol');
+
+            // Cambiar título y acción del form
+            $('#modalUsuario .modal-title').text('Editar Usuario');
+            $('#modalUsuario form').attr('action', `<?= base_url('usuarios/editar') ?>/${id}`);
+
+            // Llenar campos de texto
+            $('#modalUsuario input[name="nombre"]').val(nombre);
+            $('#modalUsuario input[name="email"]').val(email);
+            $('#modalUsuario select[name="rol"]').val(rol);
+
+            // --- GESTIÓN DE CONTRASEÑA ---
+            const passwordInput = $('#modalUsuario input[name="password"]');
+            passwordInput.val(''); // Limpiar campo
+            passwordInput.prop('required', false); // NO es obligatoria al editar
+            passwordInput.attr('placeholder', 'Dejar en blanco para mantener la actual');
+
+            $('#modalUsuario').modal('show');
         });
 
-        // Reset modal
-        $('#modalPaciente').on('hidden.bs.modal', function() {
-            $(this).find('h5').text('Ficha de Paciente');
-            $(this).find('form').attr('action', '<?= base_url('pacientes/guardar') ?>');
-            $(this).find('form')[0].reset();
-        });
-
-        <?php if (session()->getFlashdata('success')): ?>
-            toastr.success("<?= session()->getFlashdata('success') ?>");
-        <?php endif; ?>
     });
 </script>
 <?= $this->endSection() ?>

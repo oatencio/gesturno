@@ -47,4 +47,6 @@ $routes->group('superadmin', ['filter' => 'auth'], function ($routes) {
 $routes->group('usuarios', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'Usuarios::index');
     $routes->post('guardar', 'Usuarios::guardar'); // El Admin local crea sus empleados
+    $routes->post('editar/(:num)', 'Usuarios::editar/$1'); // Esta es la línea que falta
+    $routes->get('eliminar/(:num)', 'Usuarios::eliminar/$1');
 });

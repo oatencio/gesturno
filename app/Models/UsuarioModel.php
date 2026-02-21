@@ -9,9 +9,11 @@ class UsuarioModel extends Model
     protected $table            = 'usuarios';
     protected $primaryKey       = 'id';
     protected $allowedFields    = ['clinica_id', 'nombre', 'email', 'password', 'rol'];
-    
+
     // Es buena práctica usar timestamps
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+    protected $useSoftDeletes = true;
+    protected $deletedField  = 'deleted_at';
 }
