@@ -192,4 +192,37 @@ class Turnos extends BaseController
 
         return $this->response->setJSON($historial);
     }
+
+    public function vencido()
+    {
+        // Es buena idea pasarle los datos de la clínica para que sepan qué venció
+        return view('errors/suscripcion_vencida');
+    }
+
+    public function obtenerPendientesNotificar()
+    {
+        $clinicaId = session()->get('clinica_id');
+        $model = new \App\Models\TurnoModel();
+
+        $mañana = date('Y-m-d', strtotime('+1 day'));
+
+        $pendientes = $model->select('turnos.*, pacientes.nombre as p_nombre, pacientes.telefono as p_tel, profesionales.nombre as prof_nombre')
+            ->join('pacientes', 'pacientes.id = turnos.paciente_id')
+            ->join('profesionales', 'profesionales.id = turnos.profesional_id')
+            ->where([
+                'turnos.clinica_id' => $clinicaId,
+                'DATE(turnos.fecha_hora)' => $mañana,
+                'turnos.notificado' => 0,
+                'turnos.estado !=' => 'cancelado'
+            ])->findAll();
+
+        return $this->response->setJSON($pendientes);
+    }
+
+    public function marcarComoNotificado($id)
+    {
+        $model = new \App\Models\TurnoModel();
+        $model->update($id, ['notificado' => 1]);
+        return $this->response->setJSON(['status' => 'success']);
+    }
 }

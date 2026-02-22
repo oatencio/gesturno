@@ -9,7 +9,7 @@ class ClinicaModel extends Model
     protected $table            = 'clinicas';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
+    protected $returnType       = 'object';
     protected $useSoftDeletes   = false; // Cambiar a true si agregas columna deleted_at
 
     // Campos que permitimos que se carguen desde el formulario del Superadmin
@@ -20,6 +20,7 @@ class ClinicaModel extends Model
     'email', 
     'plan', 
     'estado', 
+    'fecha_vencimiento',
     'deleted_at'
 ];
 

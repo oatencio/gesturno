@@ -26,6 +26,9 @@
                 <?php endforeach; ?>
             </select>
         </div>
+        <button class="btn btn-success rounded-pill shadow-sm btn-sm px-4" onclick="cargarPendientes()">
+            <i class="bi bi-whatsapp me-1"></i> Notificaciones Pendientes
+        </button>
         <button class="btn btn-primary rounded-pill shadow-sm btn-sm px-4" data-bs-toggle="modal" data-bs-target="#modalNuevo">
             <i class="bi bi-plus-lg me-1"></i> Agendar Turno
         </button>
@@ -40,6 +43,7 @@
 <?= view('modales/modal_detalles') ?>
 <?= view('modales/modal_paciente_rapido') ?>
 <?= view('modales/modal_resultados_busqueda') ?>
+<?= view('modales/modal_notificaciones') ?>
 
 <?= $this->endSection() ?>
 
@@ -107,79 +111,82 @@
 
         calendar.render();
 
-        $('#filtroMedico').change(() => calendar.refetchEvents());
 
-        $('#formTurno').on('submit', function(e) {
-            e.preventDefault();
-            $.post('<?= base_url('turnos/agendar') ?>', $(this).serialize())
-                .done(res => {
-                    $('#modalNuevo').modal('hide');
-                    $('#formTurno')[0].reset();
-                    calendar.refetchEvents();
-                    toastr.success(res.msg);
-                }).fail(xhr => toastr.error(xhr.responseJSON.msg));
-        });
+        cargarPendientes();
+    });
 
-        $('.btn-estado').click(function() {
-            $.post('<?= base_url('turnos/cambiarEstado') ?>', {
-                id: $('#det-id').val(),
-                estado: $(this).data('estado')
-            }).done(() => {
-                $('#modalDetalles').modal('hide');
+    $('#filtroMedico').change(() => calendar.refetchEvents());
+
+    $('#formTurno').on('submit', function(e) {
+        e.preventDefault();
+        $.post('<?= base_url('turnos/agendar') ?>', $(this).serialize())
+            .done(res => {
+                $('#modalNuevo').modal('hide');
+                $('#formTurno')[0].reset();
                 calendar.refetchEvents();
-                toastr.success("Estado actualizado");
-            });
-        });
+                toastr.success(res.msg);
+            }).fail(xhr => toastr.error(xhr.responseJSON.msg));
+    });
 
-        $('#btnEliminar').click(function() {
-            if (confirm("¿Cancelar turno?")) {
-                $.post('<?= base_url('turnos/eliminar/') ?>' + $('#det-id').val())
-                    .done(() => {
-                        $('#modalDetalles').modal('hide');
-                        calendar.refetchEvents();
-                        toastr.info("Cita cancelada");
-                    });
+    $('.btn-estado').click(function() {
+        $.post('<?= base_url('turnos/cambiarEstado') ?>', {
+            id: $('#det-id').val(),
+            estado: $(this).data('estado')
+        }).done(() => {
+            $('#modalDetalles').modal('hide');
+            calendar.refetchEvents();
+            toastr.success("Estado actualizado");
+        });
+    });
+
+    $('#btnEliminar').click(function() {
+        if (confirm("¿Cancelar turno?")) {
+            $.post('<?= base_url('turnos/eliminar/') ?>' + $('#det-id').val())
+                .done(() => {
+                    $('#modalDetalles').modal('hide');
+                    calendar.refetchEvents();
+                    toastr.info("Cita cancelada");
+                });
+        }
+    });
+
+    $('#formPacienteRapido').on('submit', function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+        $.post('<?= base_url('pacientes/guardar_ajax') ?>', formData, function(res) {
+            if (res.status === 'success') {
+                const newOption = new Option(res.text, res.id, true, true);
+                $('#selectPaciente').append(newOption).trigger('change');
+                $('#modalPacienteRapido').modal('hide');
+                $('#formPacienteRapido')[0].reset();
+                toastr.success('Paciente creado');
             }
         });
+    });
 
-        $('#formPacienteRapido').on('submit', function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
-            $.post('<?= base_url('pacientes/guardar_ajax') ?>', formData, function(res) {
-                if (res.status === 'success') {
-                    const newOption = new Option(res.text, res.id, true, true);
-                    $('#selectPaciente').append(newOption).trigger('change');
-                    $('#modalPacienteRapido').modal('hide');
-                    $('#formPacienteRapido')[0].reset();
-                    toastr.success('Paciente creado');
-                }
-            });
-        });
+    $('#buscarDniTurno').on('keyup', function(e) {
+        let dniBusqueda = $(this).val().trim();
 
-        $('#buscarDniTurno').on('keyup', function(e) {
-            let dniBusqueda = $(this).val().trim();
+        // Solo buscamos si hay más de 3 caracteres
+        if (dniBusqueda.length > 3) {
+            let eventos = calendar.getEvents();
 
-            // Solo buscamos si hay más de 3 caracteres
-            if (dniBusqueda.length > 3) {
-                let eventos = calendar.getEvents();
+            // Filtramos coincidencias
+            turnosEncontrados = eventos.filter(ev =>
+                ev.extendedProps.dni && ev.extendedProps.dni.includes(dniBusqueda)
+            );
 
-                // Filtramos coincidencias
-                turnosEncontrados = eventos.filter(ev =>
-                    ev.extendedProps.dni && ev.extendedProps.dni.includes(dniBusqueda)
-                );
-
-                // Si presiona Enter y hay resultados
-                if (e.key === "Enter" && turnosEncontrados.length > 0) {
-                    if (turnosEncontrados.length === 1) {
-                        // Solo uno: levantamos modal directo
-                        mostrarTurnoEncontrado(turnosEncontrados[0]);
-                    } else {
-                        // Varios: levantamos la grilla
-                        mostrarGrillaResultados(turnosEncontrados);
-                    }
+            // Si presiona Enter y hay resultados
+            if (e.key === "Enter" && turnosEncontrados.length > 0) {
+                if (turnosEncontrados.length === 1) {
+                    // Solo uno: levantamos modal directo
+                    mostrarTurnoEncontrado(turnosEncontrados[0]);
+                } else {
+                    // Varios: levantamos la grilla
+                    mostrarGrillaResultados(turnosEncontrados);
                 }
             }
-        });
+        }
     });
 
     // Función para mostrar la tabla de resultados
@@ -266,6 +273,42 @@
                 modalContent.addClass('modal-estado-pendiente');
                 break;
         }
+    }
+
+    function cargarPendientes() {
+        $.get('<?= base_url('turnos/obtenerPendientesNotificar') ?>', function(res) {
+            if (res.length > 0) {
+                let html = '';
+                res.forEach(t => {
+                    html += `
+                <div class="list-group-item d-flex justify-content-between align-items-center" id="fila-notif-${t.id}">
+                    <div>
+                        <strong>${t.p_nombre}</strong><br>
+                        <small class="text-muted">${moment(t.fecha_hora).format('HH:mm')} - Dr. ${t.prof_nombre}</small>
+                    </div>
+                    <button class="btn btn-sm btn-success" onclick="enviarIndividual('${t.id}', '${t.p_tel}', '${t.p_nombre}', '${t.fecha_hora}', '${t.prof_nombre}')">
+                        <i class="bi bi-whatsapp"></i> Enviar
+                    </button>
+                </div>`;
+                });
+                $('#listaPendientes').html(html);
+                $('#modalNotificaciones').modal('show');
+            }
+        });
+    }
+
+    function enviarIndividual(id, tel, nombre, fecha, prof) {
+        const hora = moment(fecha).format('HH:mm');
+        const mensaje = encodeURIComponent(`Hola ${nombre}, te recordamos tu turno para mañana a las ${hora} con el profesional ${prof}. Por favor confirma tu asistencia.`);
+        const url = `https://wa.me/${tel.replace(/\D/g, '')}?text=${mensaje}`;
+
+        // 1. Abrimos WhatsApp
+        window.open(url, '_blank');
+
+        // 2. Marcamos en la DB como notificado para que no vuelva a salir
+        $.post('<?= base_url('turnos/marcarComoNotificado/') ?>' + id, function() {
+            $(`#fila-notif-${id}`).addClass('d-none');
+        });
     }
 </script>
 <?= $this->endSection() ?>

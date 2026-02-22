@@ -8,7 +8,7 @@ class TurnoModel extends Model
 {
     protected $table = 'turnos';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['clinica_id', 'profesional_id', 'paciente_id', 'paciente_nombre', 'fecha_hora', 'estado'];
+    protected $allowedFields = ['clinica_id', 'profesional_id', 'paciente_id', 'paciente_nombre', 'fecha_hora', 'estado', 'notificado'];
 
     public function getTurnosConProfesional($clinicaId)
     {

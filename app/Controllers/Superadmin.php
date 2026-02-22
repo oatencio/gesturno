@@ -82,11 +82,31 @@ class Superadmin extends BaseController
 
     public function resetPassword($id)
     {
-        $model = new \App\Models\UsuarioModel();
+        $model = new UsuarioModel();
         $nuevaPass = password_hash('Clinica123*', PASSWORD_DEFAULT);
 
         $model->update($id, ['password' => $nuevaPass]);
 
         return redirect()->back()->with('success', 'Contraseña restablecida a: Clinica123*');
+    }
+
+    public function renovarPlan()
+    {
+        $model = new ClinicaModel();
+        $id = $this->request->getPost('clinica_id');
+        $meses = $this->request->getPost('meses_a_sumar');
+
+        $clinica = $model->find($id);
+
+        // Si ya está vencida, sumamos desde hoy. Si no, sumamos desde su vencimiento actual.
+        $fechaBase = ($clinica->fecha_vencimiento < date('Y-m-d')) ? date('Y-m-d') : $clinica->fecha_vencimiento;
+        $nuevaFecha = date('Y-m-d', strtotime($fechaBase . " + $meses months"));
+
+        $model->update($id, [
+            'fecha_vencimiento' => $nuevaFecha,
+            'estado' => 'activo'
+        ]);
+
+        return redirect()->back()->with('success', "Plan renovado hasta $nuevaFecha");
     }
 }
