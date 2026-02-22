@@ -42,7 +42,7 @@
         </div>
 
         <button class="btn btn-primary rounded-pill shadow-sm px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevo" style="height: 38px;">
-            <i class="bi bi-plus-lg"></i> 
+            <i class="bi bi-plus-lg"></i>
         </button>
     </div>
 </header>
@@ -79,6 +79,20 @@
             initialView: 'timeGridWeek',
             locale: 'es',
             firstDay: 1,
+            buttonText: { // Traduce los nombres de los botones manualmente por seguridad
+                today: 'Hoy',
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día',
+                list: 'Agenda'
+            },
+            buttonHints: {
+                prev: 'Anterior',
+                next: 'Siguiente',
+                today: 'Hoy',
+                week: 'Semana',
+                day: 'Día'
+            },
             slotMinTime: '08:00:00',
             slotMaxTime: '22:00:00',
             allDaySlot: false,

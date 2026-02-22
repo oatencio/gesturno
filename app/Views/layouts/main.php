@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GesTurno | <?= $this->renderSection('title') ?></title>
+    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/img/favicon.ico') ?>">
 
     <!-- Fuentes y estilos externos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -271,10 +272,15 @@
 <body>
     <nav id="sidebar">
         <div class="sidebar-header d-flex align-items-center px-4 py-4">
-            <div class="bg-primary text-white rounded-3 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                <i class="bi bi-calendar2-check-fill" style="font-size: 1.1rem;"></i>
+            <div class="me-2 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                <img src="<?= base_url('assets/img/logo_gesturno.png') ?>"
+                    alt="Logo"
+                    style="width: 100%; height: auto; object-fit: contain;">
             </div>
-            <span class="fw-bold" style="letter-spacing: -0.5px;">GesTurno<span class="text-primary">Pro</span></span>
+
+            <span class="fw-bold fs-5" style="letter-spacing: -0.5px;">
+                GesTurno<span class="text-primary">Pro</span>
+            </span>
         </div>
 
         <div class="mt-2">
