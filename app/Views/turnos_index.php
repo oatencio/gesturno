@@ -26,9 +26,14 @@
                 <?php endforeach; ?>
             </select>
         </div>
-        <button class="btn btn-success rounded-pill shadow-sm btn-sm px-4" onclick="cargarPendientes()">
-            <i class="bi bi-whatsapp me-1"></i> Notificaciones Pendientes
-        </button>
+        <div class="position-relative d-inline-block">
+            <button type="button" class="btn btn-success rounded-pill shadow-sm btn-sm px-4" onclick="cargarPendientes()">
+                <i class="bi bi-whatsapp me-1"></i> Notificaciones
+            </button>
+            <span id="badge-notificaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                0
+            </span>
+        </div>
         <button class="btn btn-primary rounded-pill shadow-sm btn-sm px-4" data-bs-toggle="modal" data-bs-target="#modalNuevo">
             <i class="bi bi-plus-lg me-1"></i> Agendar Turno
         </button>
@@ -226,7 +231,6 @@
 
     // Función principal para abrir el detalle (se mantiene la lógica original)
     function mostrarTurnoEncontrado(evento) {
-        debugger
 
         calendar.gotoDate(evento.start);
 
@@ -277,6 +281,7 @@
 
     function cargarPendientes() {
         $.get('<?= base_url('turnos/obtenerPendientesNotificar') ?>', function(res) {
+            actualizarContadorNotificaciones(res);
             if (res.length > 0) {
                 let html = '';
                 res.forEach(t => {
@@ -309,6 +314,17 @@
         $.post('<?= base_url('turnos/marcarComoNotificado/') ?>' + id, function() {
             $(`#fila-notif-${id}`).addClass('d-none');
         });
+    }
+
+    function actualizarContadorNotificaciones(res) {
+        const count = res.length;
+        const badge = $('#badge-notificaciones');
+
+        if (count > 0) {
+            badge.text(count).show();
+        } else {
+            badge.hide();
+        }
     }
 </script>
 <?= $this->endSection() ?>
