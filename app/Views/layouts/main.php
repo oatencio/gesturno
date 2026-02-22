@@ -270,56 +270,62 @@
 
 <body>
     <nav id="sidebar">
-        <div class="sidebar-header">
-            <i class="bi bi-shield-plus me-2"></i> GesTurno
+        <div class="sidebar-header d-flex align-items-center px-4 py-4">
+            <div class="bg-primary text-white rounded-3 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="bi bi-calendar2-check-fill" style="font-size: 1.1rem;"></i>
+            </div>
+            <span class="fw-bold" style="letter-spacing: -0.5px;">GesTurno<span class="text-primary">Pro</span></span>
         </div>
-        <div class="mt-4">
+
+        <div class="mt-2">
             <?php if (session()->get('rol') === 'superadmin'): ?>
-                <div class="small text-uppercase px-4 mb-2 text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em;">Master Control</div>
+                <div class="small text-uppercase px-4 mb-2 text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em; opacity: 0.7;">Master Control</div>
                 <a href="<?= base_url('superadmin') ?>" class="nav-link <?= (uri_string() == 'superadmin') ? 'active' : '' ?>">
-                    <i class="bi bi-building-gear"></i> Gestión de Clínicas
+                    <i class="bi bi-grid-1x2-fill"></i> Panel Global
                 </a>
                 <a href="<?= base_url('superadmin/usuarios') ?>" class="nav-link <?= (strpos(uri_string(), 'usuarios') !== false) ? 'active' : '' ?>">
-                    <i class="bi bi-shield-lock"></i> Usuarios Globales
+                    <i class="bi bi-person-lock"></i> Usuarios Master
                 </a>
                 <a href="<?= base_url('superadmin/reportes') ?>" class="nav-link <?= (uri_string() == 'superadmin/reportes') ? 'active' : '' ?>">
-                    <i class="bi bi-graph-up-arrow"></i> Estadísticas Globales
+                    <i class="bi bi-pie-chart-fill"></i> Rendimiento
                 </a>
             <?php endif; ?>
 
             <?php if (session()->get('rol') !== 'superadmin'): ?>
-                <div class="small text-uppercase px-4 mb-2 text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em;">Principal</div>
+                <div class="small text-uppercase px-4 mb-2 text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em; opacity: 0.7;">Operaciones</div>
                 <a href="<?= base_url('turnos') ?>" class="nav-link <?= (uri_string() == 'turnos') ? 'active' : '' ?>">
-                    <i class="bi bi-calendar-event"></i> Agenda de Turnos
+                    <i class="bi bi-calendar3"></i> Agenda Principal
                 </a>
-                <div class="small text-uppercase px-4 mt-4 mb-2 text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em;">Administración</div>
+
+                <div class="small text-uppercase px-4 mt-4 mb-2 text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em; opacity: 0.7;">Recursos Humanos</div>
                 <a href="<?= base_url('profesionales') ?>" class="nav-link <?= (strpos(uri_string(), 'profesionales') !== false) ? 'active' : '' ?>">
-                    <i class="bi bi-people"></i> Gestión de Médicos
+                    <i class="bi bi-person-workspace"></i> Personal / Staff
                 </a>
                 <a href="<?= base_url('pacientes') ?>" class="nav-link <?= (strpos(uri_string(), 'pacientes') !== false) ? 'active' : '' ?>">
-                    <i class="bi bi-person-badge"></i> Gestión de Pacientes
+                    <i class="bi bi-people-fill"></i> Clientes
                 </a>
+
                 <?php if (session()->get('rol') == 'admin_clinica'): ?>
-                    <div class="menu-label text-muted small fw-bold mt-4 mb-2 ps-3 text-uppercase" style="font-size: 0.7rem;">Configuración Clínica</div>
+                    <div class="small text-uppercase px-4 mt-4 mb-2 text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.1em; opacity: 0.7;">Configuración</div>
 
                     <a href="<?= base_url('usuarios') ?>" class="nav-link <?= (url_is('usuarios*')) ? 'active' : '' ?>">
-                        <i class="bi bi-person-badge me-2"></i> Mi Equipo
+                        <i class="bi bi-person-gear"></i> Gestión de Equipo
                     </a>
 
                     <a href="" class="nav-link">
-                        <i class="bi bi-gear me-2"></i> Datos de Clínica
+                        <i class="bi bi-sliders"></i> Ajustes de Negocio
                     </a>
                 <?php endif; ?>
             <?php endif; ?>
 
             <div style="position: absolute; bottom: 20px; width: 100%;">
-                <hr class="mx-4 text-muted border-0 border-top opacity-25">
+                <hr class="mx-4 text-muted opacity-25">
                 <div class="px-4 mb-2 d-flex align-items-center">
-                    <div class="bg-primary rounded-circle me-2" style="width: 10px; height: 10px;"></div>
-                    <small class="text-muted"><?= session()->get('nombre') ?></small>
+                    <div class="bg-success rounded-circle me-2" style="width: 8px; height: 8px;"></div>
+                    <small class="text-muted fw-medium"><?= session()->get('nombre') ?></small>
                 </div>
-                <a href="<?= base_url('logout') ?>" class="nav-link text-danger">
-                    <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
+                <a href="<?= base_url('logout') ?>" class="nav-link text-danger opacity-75">
+                    <i class="bi bi-power"></i> Salir del Sistema
                 </a>
             </div>
         </div>

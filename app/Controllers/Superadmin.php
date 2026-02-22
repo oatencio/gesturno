@@ -14,8 +14,24 @@ class Superadmin extends BaseController
             return redirect()->to('/dashboard')->with('error', 'No tienes permisos.');
         }
 
-        $model = new ClinicaModel();
-        $data['clinicas'] = $model->findAll();
+        $clinicaModel = new ClinicaModel();
+        $usuarioModel = new UsuarioModel();
+
+        // 1. Clínicas activas vs vencidas
+        $totales = [
+            'activas'   => $clinicaModel->where('estado', 'activo')->countAllResults(),
+            'vencidas'  => $clinicaModel->where('estado', 'suspendido')->countAllResults(),
+            'proximas'  => $clinicaModel->where('fecha_vencimiento >=', date('Y-m-d'))
+                ->where('fecha_vencimiento <=', date('Y-m-d', strtotime('+7 days')))
+                ->countAllResults(),
+            'usuarios'  => $usuarioModel->countAll(),
+        ];
+
+        // 2. Listado de clínicas para la tabla (con el arreglo de objetos o arrays corregido)
+        $data = [
+            'stats'    => $totales,
+            'clinicas' => $clinicaModel->findAll(), // Asegúrate que el returnType sea 'array' o corregí la vista
+        ];
 
         return view('superadmin/clinicas_index', $data);
     }

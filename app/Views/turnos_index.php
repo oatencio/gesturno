@@ -4,38 +4,45 @@
 
 <?= $this->section('content') ?>
 
-<header class="top-bar-turnos">
-    <div>
-        <h4 class="fw-bold mb-0 text-dark">Hola, <?= session()->get('nombre') ?></h4>
-        <p class="text-muted small mb-0">Gestión de Clínica en tiempo real</p>
+<header class="top-bar-turnos d-flex align-items-center justify-content-between p-3 bg-white border-bottom shadow-sm">
+    <div class="d-none d-md-block">
+        <h4 class="fw-bold mb-0 text-dark">Hola, <?= session()->get('nombre') ?> 👋</h4>
+        <p class="text-muted small mb-0">Gestión de agenda y citas</p>
     </div>
 
-    <div class="d-flex align-items-center gap-2 ms-3" style="max-width: 300px;">
-        <div class="position-relative w-100">
-            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
-            <input type="text" id="buscarDniTurno" class="form-control form-control-sm rounded-pill ps-5" placeholder="Buscar turno por DNI...">
+    <div class="flex-grow-1 mx-4" style="max-width: 400px;">
+        <div class="position-relative">
+            <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" id="buscarDniTurno"
+                class="form-control border-0 bg-light rounded-pill ps-5 py-2 shadow-none"
+                placeholder="Buscar por DNI o Paciente..."
+                style="transition: all 0.3s ease; border: 1px solid #eee !important;">
         </div>
     </div>
 
-    <div class="d-flex align-items-center gap-3">
-        <div style="min-width: 220px;">
-            <select id="filtroMedico" class="form-select form-select-sm border-0 shadow-sm rounded-pill">
-                <option value="">Todos los profesionales</option>
-                <?php foreach ($profesionales as $p): ?>
-                    <option value="<?= $p->id ?>"><?= $p->nombre ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="position-relative d-inline-block">
-            <button type="button" class="btn btn-success rounded-pill shadow-sm btn-sm px-4" onclick="cargarPendientes()">
-                <i class="bi bi-whatsapp me-1"></i> Notificaciones
+    <div class="d-flex align-items-center gap-2">
+        <select id="filtroMedico" class="form-select form-select-sm border-0 bg-light rounded-pill shadow-sm px-3" style="min-width: 180px; height: 38px;">
+            <option value="">Profesionales</option>
+            <?php foreach ($profesionales as $p): ?>
+                <option value="<?= $p->id ?>"><?= $p->nombre ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <div class="position-relative">
+            <button type="button" class="btn btn-light rounded-pill shadow-sm border px-3" onclick="cargarPendientes()" style="height: 38px;">
+                <i class="bi bi-whatsapp text-success"></i>
             </button>
-            <span id="badge-notificaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+            <span id="badge-notificaciones"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white"
+                style="display: none; font-size: 0.7rem; margin-top: 5px; margin-left: -5px;">
                 0
             </span>
         </div>
-        <button class="btn btn-primary rounded-pill shadow-sm btn-sm px-4" data-bs-toggle="modal" data-bs-target="#modalNuevo">
-            <i class="bi bi-plus-lg me-1"></i> Agendar Turno
+
+        <button class="btn btn-primary rounded-pill shadow-sm px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevo" style="height: 38px;">
+            <i class="bi bi-plus-lg"></i> 
         </button>
     </div>
 </header>
