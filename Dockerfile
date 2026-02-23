@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
 # -----------------------------
-# Dependencias del sistema
+# Dependencias necesarias
 # -----------------------------
 RUN apt-get update && apt-get install -y \
     git \
@@ -20,17 +20,9 @@ RUN apt-get update && apt-get install -y \
 RUN a2enmod rewrite
 
 # -----------------------------
-# Configurar DocumentRoot para CI4
+# Configurar DocumentRoot SOLO en el VirtualHost
 # -----------------------------
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
-
-RUN printf '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>\n' >> /etc/apache2/apache2.conf
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 # -----------------------------
 # Instalar Composer
@@ -44,7 +36,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # -----------------------------
-# Instalar dependencias optimizadas para producción
+# Instalar dependencias producción
 # -----------------------------
 RUN composer install \
     --no-dev \
@@ -53,15 +45,12 @@ RUN composer install \
     --optimize-autoloader
 
 # -----------------------------
-# Permisos seguros (sin 777)
+# Permisos correctos
 # -----------------------------
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 writable
 
-# -----------------------------
-# Exponer puerto
-# -----------------------------
 EXPOSE 80
 
 CMD ["apache2-foreground"]
