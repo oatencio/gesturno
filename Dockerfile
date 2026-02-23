@@ -38,4 +38,15 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 writable
 
-EXPOSE 80
+# Ajuste para que Apache use la variable de entorno PORT de Railway, 
+# pero use el 80 por defecto si no existe (como en tu local).
+RUN sed -i 's/Listen 80/Listen ${PORT}/g' /etc/apache2/ports.conf
+RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/g' /etc/apache2/sites-available/000-default.conf
+
+# Definimos un valor por defecto para local
+ENV PORT=80
+
+EXPOSE ${PORT}
+
+# Usar el script de entrada oficial de PHP-Apache
+CMD ["apache2-foreground"]
