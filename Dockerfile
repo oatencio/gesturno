@@ -13,6 +13,11 @@ RUN apt-get update && apt-get install -y \
 # Activar mod_rewrite
 RUN a2enmod rewrite
 
+# 🔥 FIX Railway - evitar conflicto de MPM
+RUN a2dismod mpm_event || true
+RUN a2dismod mpm_worker || true
+RUN a2enmod mpm_prefork
+
 # Configurar DocumentRoot para CodeIgniter
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
@@ -36,6 +41,8 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 # Permisos correctos
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
-    && chmod -R 777 writable
+    && chmod -R 775 writable
 
 EXPOSE 80
+
+CMD ["apache2-foreground"]
