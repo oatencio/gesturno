@@ -12,6 +12,14 @@ services:
       - db
     networks:
       - gesturno_net
+    environment:
+      CI_ENVIRONMENT: development
+      APP_BASE_URL: http://localhost:8080/
+      DB_HOST: db
+      DB_NAME: gesturno
+      DB_USER: gesturno
+      DB_PASS: gesturno123
+      DB_PORT: 3306
 
   db:
     image: mysql:8.0
