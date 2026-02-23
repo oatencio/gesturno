@@ -1,55 +1,36 @@
 FROM php:8.2-apache
 
-# Instalar dependencias del sistema
+# 1. Instalación de dependencias (igual que antes)
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libicu-dev \
-    libxml2-dev \
+    git unzip libicu-dev libxml2-dev \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl mysqli pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
-# Activar mod_rewrite
+# 2. Configuración de Apache y CodeIgniter
 RUN a2enmod rewrite
-
-# Configurar DocumentRoot para CodeIgniter
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
-# Cambiamos los paths de Apache de forma más segura
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# Permitir .htaccess en el directorio public
-RUN echo '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' >> /etc/apache2/apache2.conf
-
-# Instalar Composer
+# 3. Composer y Código
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copiar proyecto
 WORKDIR /var/www/html
 COPY . .
-
-# Instalar dependencias
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Permisos
+# 4. Permisos
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 writable
 
-# --- ESTA ES LA PARTE CLAVE PARA RAILWAY Y LOCAL ---
-# En lugar de editar los archivos internos con sed, forzamos a Apache
-# a usar la variable PORT si existe, sino usa el 80.
-RUN echo "Listen \${PORT}" > /etc/apache2/ports.conf && \
-    sed -i 's/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/g' /etc/apache2/sites-available/000-default.conf
+# --- CAMBIO CRÍTICO AQUÍ ---
+# Copiamos el script de entrada y le damos permisos
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Valor por defecto para que funcione en local sin configurar nada
-ENV PORT=80
+# Railway necesita saber qué puerto exponer, pero el script lo manejará
+EXPOSE 80
 
-EXPOSE ${PORT}
-
-CMD ["apache2-foreground"]
+# Usamos nuestro script como punto de inicio
+ENTRYPOINT ["docker-entrypoint.sh"]
