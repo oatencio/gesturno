@@ -9,6 +9,15 @@ RUN apt-get update && apt-get install -y \
 
 RUN a2enmod rewrite
 
+# ... (después de instalar dependencias)
+
+# Limpiar configuraciones de MPM previas y forzar prefork
+RUN a2dismod mpm_event mpm_worker || true \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
+
+# ... (resto del archivo)
+
 # 2. Configuración de Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
