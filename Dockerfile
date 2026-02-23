@@ -5,8 +5,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libicu-dev \
     libxml2-dev \
-    zip \
-    curl \
+    git \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl mysqli pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
@@ -14,8 +13,9 @@ RUN apt-get update && apt-get install -y \
 # Activar mod_rewrite
 RUN a2enmod rewrite
 
-# Apuntar Apache a /public
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+# Configurar DocumentRoot SOLO en el vhost
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' \
+    /etc/apache2/sites-available/000-default.conf
 
 # Instalar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
