@@ -16,16 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = '';
-
-    public function __construct()
-    {
-        // Si existe la variable de entorno APP_BASE_URL (en Railway), úsala.
-        if (getenv('app.baseURL')) {
-            $this->baseURL = getenv('app.baseURL');
-        }
-        $this->forceGlobalSecureRequests = getenv('CI_ENVIRONMENT') === 'production';
-    }
+    public string $baseURL = 'http://localhost:8080/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -167,7 +158,7 @@ class App extends BaseConfig
      * secure, the user will be redirected to a secure version of the page
      * and the HTTP Strict Transport Security (HSTS) header will be set.
      */
-    public bool $forceGlobalSecureRequests;
+    public bool $forceGlobalSecureRequests = false;
 
     /**
      * --------------------------------------------------------------------------
@@ -190,7 +181,7 @@ class App extends BaseConfig
      *
      * @var array<string, string>
      */
-    public array $proxyIPs = ['*' => 'X-Forwarded-For'];
+    public array $proxyIPs = [];
 
     /**
      * --------------------------------------------------------------------------
