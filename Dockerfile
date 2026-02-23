@@ -1,36 +1,41 @@
 FROM php:8.2-apache
 
-# 1. Instalación de dependencias (igual que antes)
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    git unzip libicu-dev libxml2-dev \
+    git \
+    unzip \
+    libicu-dev \
+    libxml2-dev \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl mysqli pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Configuración de Apache y CodeIgniter
+# Activar mod_rewrite
 RUN a2enmod rewrite
+
+# Configurar DocumentRoot para CodeIgniter
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 3. Composer y Código
+RUN echo '<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+</Directory>' >> /etc/apache2/apache2.conf
+
+# Instalar Composer dentro del contenedor
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copiar proyecto
 WORKDIR /var/www/html
 COPY . .
+
+# Instalar dependencias automáticamente
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# 4. Permisos
+# Permisos correctos
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 writable
 
-# --- CAMBIO CRÍTICO AQUÍ ---
-# Copiamos el script de entrada y le damos permisos
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Railway necesita saber qué puerto exponer, pero el script lo manejará
 EXPOSE 80
-
-# Usamos nuestro script como punto de inicio
-ENTRYPOINT ["docker-entrypoint.sh"]
