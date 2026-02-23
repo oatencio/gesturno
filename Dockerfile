@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 # Instalar extensiones necesarias
 RUN apt-get update && apt-get install -y \
@@ -11,23 +11,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install intl mysqli pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
-# -----------------------------
-# ARREGLAR MPM (esto es la clave)
-# -----------------------------
-RUN a2dismod mpm_event || true
-RUN a2dismod mpm_worker || true
-RUN a2enmod mpm_prefork
-
-# Activar mod_rewrite
-RUN a2enmod rewrite
-
-# Cambiar DocumentRoot a public
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-
 # Instalar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /app
 COPY . .
 
 RUN composer install \
@@ -36,10 +23,6 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader
 
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
-    && chmod -R 775 writable
+EXPOSE 8080
 
-EXPOSE 80
-
-CMD ["apache2-foreground"]
+CMD php spark serve --host=0.0.0.0 --port=8080
