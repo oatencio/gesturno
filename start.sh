@@ -7,15 +7,15 @@ echo "🚀 Iniciando proceso de despliegue en ambiente: $CI_ENVIRONMENT"
 
 # 1. Configuración de Base de Datos (Solo en Producción/Railway)
 if [ "$CI_ENVIRONMENT" = "production" ]; then
-    echo "- Verificando conexión a la base de datos..."
+    echo "- Esperando a que la base de datos esté lista..."
+    sleep 5 # Pausa de seguridad para que MySQL levante
     
-    # Intentar ejecutar migraciones
     echo "- Ejecutando migraciones pendientes..."
-    php spark migrate --all || echo "⚠️ Las migraciones fallaron o ya estaban aplicadas."
+    # Usamos el flag --force porque en producción CI4 lo pide
+    php spark migrate --all --force || echo "⚠️ Migraciones saltadas."
 
-    # Opcional: Ejecutar Seeders si la tabla de clínicas está vacía
     echo "- Verificando datos iniciales..."
-    php spark db:seed MainSeeder || echo "⚠️ El seeder ya fue ejecutado o falló."
+    php spark db:seed MainSeeder --force || echo "⚠️ Seeder saltado."
 fi
 
 # 2. Configuración Dinámica de Apache
