@@ -8,13 +8,6 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
-    environment:
-      CI_ENVIRONMENT: development
-      APP_BASE_URL: http://localhost:8080
-      DB_HOST: db
-      DB_NAME: gesturno
-      DB_USER: gesturno
-      DB_PASS: gesturno123
     depends_on:
       - db
     networks:
@@ -22,8 +15,8 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: gesturno_db
     command: --default-authentication-plugin=mysql_native_password
+    container_name: gesturno_db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -44,8 +37,7 @@ services:
       - "8081:80"
     environment:
       PMA_HOST: db
-      PMA_USER: gesturno
-      PMA_PASSWORD: gesturno123
+      MYSQL_ROOT_PASSWORD: root
     depends_on:
       - db
     networks:

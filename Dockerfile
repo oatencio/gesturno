@@ -1,28 +1,41 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-# Instalar extensiones necesarias
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
+    git \
     unzip \
     libicu-dev \
     libxml2-dev \
-    zip \
-    curl \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl mysqli pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Activar mod_rewrite
+RUN a2enmod rewrite
 
-WORKDIR /app
+# Configurar DocumentRoot para CodeIgniter
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+
+RUN echo '<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+</Directory>' >> /etc/apache2/apache2.conf
+
+# Instalar Composer dentro del contenedor
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copiar proyecto
+WORKDIR /var/www/html
 COPY . .
 
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader
+# Instalar dependencias automáticamente
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-EXPOSE 8080
+# Permisos correctos
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 777 writable
 
-CMD php spark serve --host=0.0.0.0 --port=8080
+EXPOSE 80
