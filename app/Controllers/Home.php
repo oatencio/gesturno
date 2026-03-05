@@ -22,6 +22,7 @@ class Home extends BaseController
     } catch (\Throwable $e) {
         echo "Error de conexión ❌<br>";
         echo $e->getMessage();
+        echo env('database.default.hostname');
     }
 }
 }
