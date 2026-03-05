@@ -65,3 +65,4 @@ $routes->group('', ['filter' => ['auth', 'checkPago']], function ($routes) {
         $routes->get('eliminar/(:num)', 'Usuarios::eliminar/$1');
     });
 });
+$routes->get('testdb', 'Home::testdb');
