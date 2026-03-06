@@ -19,16 +19,6 @@ class App extends BaseConfig
     // public string $baseURL = 'http://localhost/';
     public string $baseURL = '';
 
-    <?php
-
-namespace Config;
-
-use CodeIgniter\Config\BaseConfig;
-
-class App extends BaseConfig
-{
-    public string $baseURL = '';
-
     public function __construct()
     {
         parent::__construct();
@@ -53,12 +43,11 @@ class App extends BaseConfig
         } elseif (!empty($_SERVER['HTTP_HOST'])) {
             $host = $_SERVER['HTTP_HOST'];
         } else {
-            $host = 'localhost';
+            $host = 'localhost:8080'; // Valor por defecto si no se detecta el host
         }
 
         $this->baseURL = $protocol . $host . '/';
     }
-}
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
