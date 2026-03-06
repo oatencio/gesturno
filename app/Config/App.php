@@ -17,8 +17,48 @@ class App extends BaseConfig
      * E.g., http://example.com/
      */
     // public string $baseURL = 'http://localhost/';
-    public string $baseURL = 'https://gesturno-web.onrender.com/';
+    public string $baseURL = '';
 
+    <?php
+
+namespace Config;
+
+use CodeIgniter\Config\BaseConfig;
+
+class App extends BaseConfig
+{
+    public string $baseURL = '';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Detectar protocolo correctamente incluso detrás de proxy
+        $isHttps = false;
+
+        if (
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            ($_SERVER['SERVER_PORT'] ?? null) == 443 ||
+            ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https' ||
+            ($_SERVER['HTTP_X_FORWARDED_SSL'] ?? '') === 'on'
+        ) {
+            $isHttps = true;
+        }
+
+        $protocol = $isHttps ? 'https://' : 'http://';
+
+        // Detectar host correctamente
+        if (!empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        } elseif (!empty($_SERVER['HTTP_HOST'])) {
+            $host = $_SERVER['HTTP_HOST'];
+        } else {
+            $host = 'localhost';
+        }
+
+        $this->baseURL = $protocol . $host . '/';
+    }
+}
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
